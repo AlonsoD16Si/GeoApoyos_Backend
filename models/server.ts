@@ -3,13 +3,15 @@ import cors from 'cors';
 import db from '../database/connection';
 import FormularioRoutes from '../routes/formulario'; // Importa las rutas de formularios
 import UsuarioRoutes from '../routes/usuarioR'; // Importa las rutas de usuarios
+import VisitaRoutes from '../routes/visita'; // Importa las rutas de visitas
 
 class Server {
   private app: Application;
   private port: string;
   private apiPaths = {
     usuarios: '/api/GeoA',
-    formularios: '/api/formularios' 
+    formularios: '/api/formularios' ,
+    visita: '/api/visita'
   };
 
   constructor() {
@@ -53,6 +55,9 @@ class Server {
 
     // Rutas para formularios
     this.app.use(this.apiPaths.formularios, FormularioRoutes);
+
+    this.app.use(this.apiPaths.visita, VisitaRoutes);
+
   }
 
   listen() {

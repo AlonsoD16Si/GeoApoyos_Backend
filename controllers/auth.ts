@@ -37,12 +37,13 @@ export const login = async (req= request, res= response) => {
                 msg: 'Usuario / Password no son correctos - password'
             });
         }
+
         const token = await generarJWT( usuario.idUsuario );
+
         res.json({
             usuario,
             token: token
         });
-        
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -50,6 +51,5 @@ export const login = async (req= request, res= response) => {
         });
     }
 };
-
 
 

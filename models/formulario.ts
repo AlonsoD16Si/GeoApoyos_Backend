@@ -1,8 +1,38 @@
-import { DataTypes } from 'sequelize';
+import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
 
-const Domicilio = db.define('Usuario', {
+interface FormularioAttributes {
+    idFormulario: number,
+    pregunta1: string,
+    pregunta2: string,
+    pregunta3: string,
+    pregunta4: string,
+    pregunta5: string,
+    pregunta6: string,
+    pregunta7: string,
+    pregunta8: string,
+    pregunta9: string,
+    pregunta10: string,
+    pregunta11: string,
+    pregunta12: string,
+    pregunta13: string,
+    pregunta14: string,
+    pregunta15: string,
+    pregunta16: string,
+    pregunta17: string,
+    solicitante_idSolicitante: number,
+}
 
+export interface FormularioInstance
+    extends Model<FormularioAttributes>,
+    FormularioAttributes { }
+
+const Formulario = db.define<FormularioInstance>('Formulario', {
+    idFormulario: {
+        type: DataTypes.NUMBER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     pregunta1: {
         type: DataTypes.STRING
     },
@@ -54,12 +84,15 @@ const Domicilio = db.define('Usuario', {
     pregunta17: {
         type: DataTypes.STRING
     },
-    solicitante_id: {
+    solicitante_idSolicitante: {
         type: DataTypes.NUMBER
     },
-    
-    
-    
-});
+},
+    {
+        // Opciones del modelo
+        tableName: 'formulario',
+        timestamps: false,
+        schema: "GeoApoyo"
+    });
 
-export default Domicilio;
+export default Formulario;

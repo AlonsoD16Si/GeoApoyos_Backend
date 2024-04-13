@@ -2,7 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
 
 interface SolicitanteAttributes {
-    idSolicitante?: number; // Hacer idSolicitante opcional
+    idSolicitante: Number,
     nombre: string;
     primerApellido: string;
     segundoApellido: string;
@@ -15,7 +15,9 @@ interface SolicitanteAttributes {
     correo: string;
 }
 
-export interface SolicitanteInstance extends Model<SolicitanteAttributes>, SolicitanteAttributes {}
+export interface SolicitanteInstance
+    extends Model<SolicitanteAttributes>,
+    SolicitanteAttributes { }
 
 const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
     idSolicitante: {
@@ -53,11 +55,12 @@ const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
     correo: {
         type: DataTypes.STRING
     },
-}, {
-    // Opciones del modelo
-    tableName: 'solicitante',
-    timestamps: false,
-    schema: "GeoApoyo"
-});
+},
+    {
+        // Opciones del modelo
+        tableName: 'solicitante',
+        timestamps: false,
+        schema: "GeoApoyo"
+    });
 
 export default Solicitante;
