@@ -6,9 +6,10 @@ import { UsuarioInstance } from '../models/usuarioM';
 class SolicitanteController {
     async crearSolicitante(req: Request, res: Response) {
         try {
-            const { nombre, primerApellido, segundoApellido, genero, edad, institucion, grado, tipoApoyo, estatus, correo } = req.body;
+            const {idSolicitante, nombre, primerApellido, segundoApellido, genero, edad, institucion, grado, tipoApoyo, estatus, correo } = req.body;
             
             const nuevoSolicitante = await this.crearNuevoSolicitante({
+                idSolicitante,
                 nombre,
                 primerApellido,
                 segundoApellido,
@@ -28,10 +29,11 @@ class SolicitanteController {
         }
     }
 
-    async crearNuevoSolicitante({ nombre, primerApellido, segundoApellido, genero, edad, institucion, grado, tipoApoyo, estatus, correo }: 
-        { nombre: string; primerApellido: string; segundoApellido: string; genero: string; edad: string; institucion: string; grado: string; tipoApoyo: string; estatus: string; correo: string; }) {
+    async crearNuevoSolicitante({idSolicitante, nombre, primerApellido, segundoApellido, genero, edad, institucion, grado, tipoApoyo, estatus, correo }: 
+        {idSolicitante: Number, nombre: string; primerApellido: string; segundoApellido: string; genero: string; edad: string; institucion: string; grado: string; tipoApoyo: string; estatus: string; correo: string; }) {
         try {
             const nuevoSolicitante = await Solicitante.create({
+                idSolicitante,
                 nombre,
                 primerApellido,
                 segundoApellido,

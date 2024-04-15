@@ -1,7 +1,8 @@
 import { DataTypes } from 'sequelize';
 import db from '../database/connection';
 
-const Visita = db.define('Visita', {
+const Visita = db.define('Usuario', {
+
     confirmacionSolicitante: {
         type: DataTypes.BOOLEAN
     },
@@ -26,20 +27,23 @@ const Visita = db.define('Visita', {
     fotoDomicilio: {
         type: DataTypes.STRING
     },
-    fotoIdentificacion: {
+    FotoIdentificacion: {
         type: DataTypes.STRING
     },
-    SolicitanteId: { // Cambiado a notación camelCase
-        type: DataTypes.NUMBER // Cambiado a DataTypes.NUMBER
+    solicitante_idSolicitante: {
+        type: DataTypes.NUMBER
     },
-    usuarioId: { // Cambiado a notación camelCase
-        type: DataTypes.NUMBER // Cambiado a DataTypes.NUMBER
+    usuario_idUsuario: {
+        type: DataTypes.NUMBER
     },
-}, {
-    // Opciones del modelo
-    tableName: 'visita', // Cambiado a 'visita'
-    timestamps: false, // Cambiado a false
-    schema: "GeoApoyo"
+},
+    {
+        // Opciones del modelo
+        tableName: 'visita',
+        timestamps: false,
+        schema: "GeoApoyo"
+    
 });
+
 
 export default Visita;

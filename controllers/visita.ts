@@ -1,70 +1,139 @@
-// src/controllers/VisitaController.ts
 import { Request, Response } from 'express';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import fs from 'fs';
 import Visita from '../models/visita';
 import Solicitante from '../models/solicitante';
 import Domicilio from '../models/domicilio';
 
-export const visitasPendientes = async (req: Request, res: Response) => {
+// Configure multer for image uploads
+const upload = multer({
+  dest: 'uploads/', // Temporary upload directory
+  fileFilter: (req, file, cb) => {
+    const allowedExtensions = ['.jpg', '.jpeg', '.png'];
+    if (!allowedExtensions.includes(path.extname(file.originalname))) {
+      return cb(new Error('Invalid file type. Only JPEG, JPG, and PNG are allowed'));
+    }
+    cb(null, true);
+  }
+});
+
+// Get pending visits for a user
+export const getVisitasPendientes = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
     const visitas = await Visita.findAll({
       where: {
         confirmacionSolicitante: false,
-        solicitante_id: id
+        usuario_idUsuario: id
       },
-      include: [
-        { model: Solicitante },
-        { model: Domicilio }
-      ]
+      include: [{
+        model: Solicitante,
+        include: [Domicilio]
+      }]
     });
     res.json(visitas);
   } catch (error) {
-    console.error('Error al obtener las visitas pendientes:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error al obtener visitas pendientes:', error);
+    res.status(500).send('Error interno del servidor');
   }
 };
 
-export const actualizarEstatus = async (req: Request, res: Response) => {
+// Update the status of a visit
+export const actualizarEstatus = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { estatus, razon, latitud, longitud } = req.body;
+
   try {
-    const { id, estatus, razon, latitud, longitud, fotoCasa } = req.body;
-    await Visita.update(
-      { estatus, razon, latitudVisita: latitud, longitudVisita: longitud, fotoDomicilio: fotoCasa },
-      { where: { idVisita: id } }
-    );
-    res.json({ message: 'Estatus actualizado correctamente' });
+    // Handle image upload using multer
+    const file = req.file;
+    if (!file) {
+      return res.status(400).send('No se ha seleccionado una foto');
+    }
+
+    // Generate a unique filename for the image
+    const fileName = `${uuidv4()}${path.extname(file.originalname)}`;
+    const filePath = path.join(__dirname, '..', 'uploads', fileName);
+
+    // Move the uploaded file to the uploads directory
+    fs.writeFileSync(filePath, file.buffer);
+
+    // Update the visit with all the data
+    await Visita.update({
+      estatus,
+      razon,
+      latitudVisita: latitud,
+      longitudVisita: longitud,
+      fotoDomicilio: fileName // Use the generated filename
+    }, {
+      where: { idVisita: id }
+    });
+
+    res.send('Estatus de visita actualizado exitosamente');
   } catch (error) {
     console.error('Error al actualizar el estatus de la visita:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).send('Error interno del servidor');
   }
 };
 
-export const confirmarVisita = async (req: Request, res: Response) => {
+// Confirm a visit
+export const confirmarVisita = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { idSolicitante, fecha, hora, latitud, longitud } = req.body;
+
   try {
-    const { idSolicitante, fecha, hora, latitud, longitud } = req.body;
-    await Visita.create({
+    await Visita.update({
       confirmacionSolicitante: true,
       estatus: 'EN',
       razon: 'encontrado',
       fecha,
       hora,
       latitudVisita: latitud,
-      longitudVisita: longitud,
-      solicitante_id: idSolicitante
+      longitudVisita: longitud
+    }, {
+      where: { idVisita: id }
     });
-    res.json({ message: 'Visita confirmada correctamente' });
+
+    res.send('Visita confirmada exitosamente');
   } catch (error) {
     console.error('Error al confirmar la visita:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).send('Error interno del servidor');
   }
 };
 
-export const fotoSolicitante = async (req: Request, res: Response) => {
+// Get solicitante photo (not implemented yet)
+export const fotoSolicitante = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
-    res.json({ message: 'Foto del solicitante correctamente' });
+    const solicitante = await Solicitante.findByPk(id);
+    if (!solicitante) {
+      res.status(404).send('Solicitante no encontrado');
+      return;
+    }
+
+    // Get the photo filename from the solicitante
+    const photoFilename = solicitante.foto; // Assuming 'foto' is the property that stores the filename
+    if (!photoFilename) {
+      res.status(404).send('Foto de solicitante no encontrada');
+      return;
+    }
+
+    // Construct the photo path
+    const photoPath = path.join(__dirname, '..', 'solicitante-photos', photoFilename);
+
+    // Check if the photo file exists
+    if (!fs.existsSync(photoPath)) {
+      res.status(404).send('Foto de solicitante no encontrada');
+      return;
+    }
+
+    // Send the photo file as a response
+    res.sendFile(photoPath);
   } catch (error) {
     console.error('Error al obtener la foto del solicitante:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).send('Error interno del servidor');
   }
 };
-

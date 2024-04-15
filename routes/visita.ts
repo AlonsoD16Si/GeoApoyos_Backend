@@ -1,12 +1,17 @@
-import express from 'express';
-import { visitasPendientes, actualizarEstatus, confirmarVisita, fotoSolicitante } from '../controllers/visita';
+import { Router } from 'express';
+import {
+    getVisitasPendientes,
+    actualizarEstatus,
+    confirmarVisita,
+    fotoSolicitante
+} from '../controllers/visita';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/visitasPendientes/:id', visitasPendientes);
-router.post('/actualizarEstatus', actualizarEstatus);
-router.post('/confirmarVisita', confirmarVisita);
-router.get('/fotoSolicitante/:id', fotoSolicitante);
-
+// Rutas para las visitas
+router.get('/visita/visitasPendientes/:id', getVisitasPendientes);
+router.post('/visita/actualizarEstatus/:id', actualizarEstatus);
+router.post('/visita/confirmarVisita/:id', confirmarVisita);
+router.get('/visita/fotoSolicitante/:id', fotoSolicitante);
 
 export default router;

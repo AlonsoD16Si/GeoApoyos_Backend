@@ -1,70 +1,71 @@
 import express, { Application } from 'express';
+import userRoutes from '../routes/usuarioR';
+import visitaRoutes from '../routes/visita';
 import cors from 'cors';
+
 import db from '../database/connection';
-import FormularioRoutes from '../routes/formulario'; // Importa las rutas de formularios
-import UsuarioRoutes from '../routes/usuarioR'; // Importa las rutas de usuarios
-import VisitaRoutes from '../routes/visita'; // Importa las rutas de visitas
 
 class Server {
-  private app: Application;
-  private port: string;
-  private apiPaths = {
-    usuarios: '/api/GeoA',
-    formularios: '/api/formularios' ,
-    visita: '/api/visita'
-  };
+    private app: Application;
+    private port: string;
+    private apiPaths = {
+        usuarios: '/api/GeoA',
+        visita: '/api/visitaU'
+    };
 
-  constructor() {
-    this.app = express();
-    this.port = process.env.PORT || '8080';
+    constructor() {
+        this.app = express();
+        this.port = process.env.PORT || '8080';
 
-    //* Métodos iniciales
-    // Conexión a base de datos
-    this.dbConnection();
-
-    // Llamamos a los middlewares
-    this.middlewares();
-
-    // Definir mis rutas
-    this.routes();
-  }
-
-  async dbConnection() {
-    try {
-      await db.authenticate();
-      console.log('Database online');
-    } catch (error: any) {
-      throw new Error(error);
+        // Métodos iniciales
+        this.init();
     }
-  }
 
-  middlewares() {
-    // CORS
-    this.app.use(cors());
+    private async init() {
+        // Conexión a la base de datos
+        await this.dbConnection();
 
-    // Lectura del body
-    this.app.use(express.json());
+        // Llamamos a los middlewares
+        this.middlewares();
 
-    // Carpeta pública
-    this.app.use(express.static('public'));
-  }
+        // Definimos nuestras rutas
+        this.routes();
+    }
 
-  routes() {
-    // Rutas para usuarios
-    this.app.use(this.apiPaths.usuarios, UsuarioRoutes);
+    private async dbConnection() {
+        try {
+            await db.authenticate();
+            console.log('Database online');
+        } catch (error: any) {
+            console.error('Error connecting to database:', error);
+            throw new Error('Could not connect to database');
+        }
+    }
 
-    // Rutas para formularios
-    this.app.use(this.apiPaths.formularios, FormularioRoutes);
+    private middlewares() {
+        // CORS
+        this.app.use(cors());
 
-    this.app.use(this.apiPaths.visita, VisitaRoutes);
+        // Lectura del body
+        this.app.use(express.json());
 
-  }
+        // Carpeta pública
+        this.app.use(express.static('public'));
+    }
 
-  listen() {
-    this.app.listen(this.port, () => {
-      console.log('Servidor corriendo en puerto ' + this.port);
-    });
-  }
+    private routes() {
+        // Rutas de usuarios
+        this.app.use(this.apiPaths.usuarios, userRoutes);
+
+        // Rutas de visitas
+        this.app.use(this.apiPaths.visita, visitaRoutes);
+    }
+
+    public listen() {
+        this.app.listen(this.port, () => {
+            console.log('Server running on port ' + this.port);
+        });
+    }
 }
 
 export default Server;
