@@ -10,7 +10,7 @@ export const visitasPendientes = async (req: Request, res: Response) => {
     const visitas = await Visita.findAll({
       where: {
         confirmacionSolicitante: false,
-        solicitante_id: id
+        solicitante_idSolicitante: id
       },
       include: [
         { model: Solicitante },
@@ -26,9 +26,9 @@ export const visitasPendientes = async (req: Request, res: Response) => {
 
 export const actualizarEstatus = async (req: Request, res: Response) => {
   try {
-    const { id, estatus, razon, latitud, longitud, fotoCasa } = req.body;
+    const { id, estatus, Razon, latitud, longitud, fotoCasa } = req.body;
     await Visita.update(
-      { estatus, razon, latitudVisita: latitud, longitudVisita: longitud, fotoDomicilio: fotoCasa },
+      { estatus, Razon, latitudVisita: latitud, longitudVisita: longitud, fotoDomicilio: fotoCasa },
       { where: { idVisita: id } }
     );
     res.json({ message: 'Estatus actualizado correctamente' });
@@ -40,16 +40,21 @@ export const actualizarEstatus = async (req: Request, res: Response) => {
 
 export const confirmarVisita = async (req: Request, res: Response) => {
   try {
-    const { idSolicitante, fecha, hora, latitud, longitud } = req.body;
+    const { idSolicitante, idDomicilio, idUsuario, fecha, hora, latitud, longitud } = req.body;
     await Visita.create({
+      idVisita: 0,
       confirmacionSolicitante: true,
       estatus: 'EN',
-      razon: 'encontrado',
-      fecha,
-      hora,
+      Razon: 'encontrado', // Corregido a minúscula para que coincida con la definición del modelo
+      fecha: new Date(fecha), // Asegúrate de convertir la fecha a un objeto Date si no lo es
+      hora, // No es necesario convertir la hora si ya está en el formato correcto
       latitudVisita: latitud,
       longitudVisita: longitud,
-      solicitante_id: idSolicitante
+      fotoDomicilio: '...', // Asegúrate de proporcionar una URL válida para la foto
+      FotoIdentidicacion: '...', // Asegúrate de proporcionar una URL válida para la foto de identificación
+      solicitante_idSolicitante: idSolicitante,
+      domicilio_idDomicilio: idDomicilio,
+      usuario_idUsuario: idUsuario,
     });
     res.json({ message: 'Visita confirmada correctamente' });
   } catch (error) {
@@ -57,6 +62,7 @@ export const confirmarVisita = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
 
 export const fotoSolicitante = async (req: Request, res: Response) => {
   try {
