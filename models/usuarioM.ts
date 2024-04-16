@@ -1,8 +1,11 @@
+// Usuario.ts
 import { Model, DataTypes } from 'sequelize';
 import db from '../database/connection';
+import { SolicitanteInstance } from '../models/solicitante';
+
 
 interface UsuarioAttributes {
-    idUsuario: Number,
+    idUsuario: number;
     nombre: string;
     primerApellido: string;
     segundoApellido: string;
@@ -12,15 +15,15 @@ interface UsuarioAttributes {
     correo: string;
     contrasenia: string;
     estatus: string;
+    Solicitante?: SolicitanteInstance; // Agrega esta línea
+
 }
 
-export interface UsuarioInstance
-    extends Model<UsuarioAttributes>,
-    UsuarioAttributes { }
+export interface UsuarioInstance extends Model<UsuarioAttributes>, UsuarioAttributes {}
 
 const Usuario = db.define<UsuarioInstance>('usuario', {
     idUsuario: {
-        type: DataTypes.NUMBER,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
@@ -51,13 +54,12 @@ const Usuario = db.define<UsuarioInstance>('usuario', {
     estatus: {
         type: DataTypes.STRING,
         defaultValue: 'AC'
-    },
-},
-    {
-        // Opciones del modelo
-        tableName: 'usuario', // Reemplaza esto con el nombre real de tu tabla
-        timestamps: false,
-        schema: "GeoApoyo"
-    });
+    }
+}, {
+    tableName: 'usuario', 
+    timestamps: false,
+    schema: "GeoApoyo"
+});
+
 
 export default Usuario;

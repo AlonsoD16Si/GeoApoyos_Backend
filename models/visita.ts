@@ -1,5 +1,9 @@
 import { DataTypes } from 'sequelize';
 import db from '../database/connection';
+import Solicitante from './solicitante'; 
+import Domicilio from './domicilio';
+import Usuario from './usuarioM'; 
+
 
 const Visita = db.define('Usuario', {
 
@@ -42,8 +46,10 @@ const Visita = db.define('Usuario', {
         tableName: 'visita',
         timestamps: false,
         schema: "GeoApoyo"
-    
-});
 
+    });
+Visita.belongsTo(Solicitante, { foreignKey: 'solicitante_idSolicitante' });
+Visita.belongsTo(Domicilio, { foreignKey: 'idDomicilio' });
+Visita.belongsTo(Usuario, { foreignKey: 'usuario_idUsuario' });
 
 export default Visita;

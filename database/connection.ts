@@ -1,10 +1,22 @@
 import { Sequelize } from "sequelize";
+import dotenv from 'dotenv';
+//import '../models/asociaciones';
 
 
-const db = new Sequelize('geoApoyo_db', 'postgres', 'root', {
-    host: 'localhost',
+dotenv.config();
+
+const databaseConnection = new Sequelize('geoapoyos', 'doadmin', process.env.PASSWORD_DB, {
+    host: process.env.HOST_DB,
     dialect: 'postgres',
-    //logging: false
+    port: 25060,
+    protocol: 'null',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
 });
 
-export default db
+
+export default databaseConnection;

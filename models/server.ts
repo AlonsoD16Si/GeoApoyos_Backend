@@ -4,6 +4,7 @@ import visitaRoutes from '../routes/visita';
 import cors from 'cors';
 
 import db from '../database/connection';
+import { Usuario, Solicitante, Visita } from './asociaciones'; // Importa las asociaciones
 
 class Server {
     private app: Application;
@@ -30,6 +31,9 @@ class Server {
 
         // Definimos nuestras rutas
         this.routes();
+
+        // Configuración de las asociaciones
+        this.setupAssociations();
     }
 
     private async dbConnection() {
@@ -59,6 +63,10 @@ class Server {
 
         // Rutas de visitas
         this.app.use(this.apiPaths.visita, visitaRoutes);
+    }
+
+    private setupAssociations() {
+        // No necesitas hacer nada aquí, las asociaciones se configurarán automáticamente al importarlas
     }
 
     public listen() {

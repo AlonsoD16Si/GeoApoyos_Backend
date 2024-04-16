@@ -1,12 +1,13 @@
 import { request, response } from 'express';
 import { Request, Response } from 'express';
-const bcryptjs = require('bcryptjs');
-import Usuario from '../models/usuarioM';
+import bcryptjs from 'bcryptjs'; // Importa bcryptjs como módulo ES6
+// import Usuario from '../models/usuarioM';
 import Solicitante from '../models/solicitante';
 import Domicilio from '../models/domicilio';
 import Formulario from '../models/formulario';
 import db from '../database/connection';
 import seleccionarVisitadorDisponible from '../controllers/solicitanteController'
+import { Usuario } from '../models/asociaciones'; // Importa las asociaciones
 
 
 
@@ -197,19 +198,27 @@ export const getUsuarios = async (req: Request, res: Response) => {
 }
 
 export const getUsuario = async (req: Request, res: Response) => {
-
     const { id } = req.params;
 
-    const usuario = await Usuario.findByPk(id);
+    try {
+        // Utiliza la asociación definida en la clase 'asociaciones' para cargar el 'Solicitante' asociado
+        const usuario = await Usuario.findByPk(id, { include: Solicitante });
 
-    if (usuario) {
-        res.json(usuario);
-    } else {
-        res.status(404).json({
-            msg: `No existe un usuario con el id ${id}`
-        })
+        if (usuario) {
+            res.json(usuario);
+        } else {
+            res.status(404).json({
+                msg: `No existe un usuario con el id ${id}`
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Hable con el administrador'
+        });
     }
 }
+
 
 
 export const putUsuario = async (req: Request, res: Response) => {

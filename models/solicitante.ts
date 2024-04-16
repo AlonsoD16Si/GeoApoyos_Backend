@@ -1,8 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
-import db from '../database/connection';
+import databaseConnection  from '../database/connection';
 
 interface SolicitanteAttributes {
-    idSolicitante: Number,
+    idSolicitante: number;
     nombre: string;
     primerApellido: string;
     segundoApellido: string;
@@ -15,15 +15,13 @@ interface SolicitanteAttributes {
     correo: string;
 }
 
-export interface SolicitanteInstance
-    extends Model<SolicitanteAttributes>,
-    SolicitanteAttributes { }
+export interface SolicitanteInstance extends Model<SolicitanteAttributes>, SolicitanteAttributes {}
 
-const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
+const Solicitante = databaseConnection.define<SolicitanteInstance>('Solicitante', {
     idSolicitante: {
-        type: DataTypes.NUMBER,
-        primaryKey: true,
-        autoIncrement: true
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
     nombre: {
         type: DataTypes.STRING
@@ -55,12 +53,11 @@ const Solicitante = db.define<SolicitanteInstance>('Solicitante', {
     correo: {
         type: DataTypes.STRING
     },
-},
-    {
-        // Opciones del modelo
-        tableName: 'solicitante',
-        timestamps: false,
-        schema: "GeoApoyo"
-    });
+}, {
+    // Model options
+    tableName: 'solicitante',
+    timestamps: false,
+    schema: 'GeoApoyo'
+});
 
 export default Solicitante;
