@@ -13,6 +13,7 @@ interface SolicitanteAttributes {
     tipoApoyo: string;
     estatus: string;
     correo: string;
+    foto: Buffer | Uint8Array;
 }
 
 export interface SolicitanteInstance extends Model<SolicitanteAttributes>, SolicitanteAttributes {}
@@ -53,6 +54,10 @@ const Solicitante = databaseConnection.define<SolicitanteInstance>('Solicitante'
     correo: {
         type: DataTypes.STRING
     },
+    foto: {
+        type: DataTypes.BLOB, // Cambiado a DataTypes.BLOB para representar datos binarios
+        allowNull: false // Añadido para evitar valores nulos en la columna 'foto'
+    }
 }, {
     // Model options
     tableName: 'solicitante',
